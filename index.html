@@ -16,15 +16,24 @@ a,button{color:inherit;font:inherit;text-transform:inherit;letter-spacing:inheri
 a:hover,button:hover{color:var(--hot)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--hot);outline-offset:3px}
 img{display:block;width:100%;height:100%;object-fit:cover}
-p{margin:0}
+p,h2{margin:0}
+h2{font:inherit}
 
+/* ---------- layers (stacked normally; pinned and animated when the script adds .fx) ---------- */
+.layer{position:relative}
+
+/* 1 · hero: full-screen image with all text in white */
+.hero{min-height:100vh;min-height:100svh;color:#fff;background:#000;overflow:hidden}
+.hero a:hover{color:var(--hot)}
+.hero .bg{position:absolute;inset:0;transform-origin:50% 60%;will-change:transform}
+.hero .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.4),rgba(0,0,0,0) 38%,rgba(0,0,0,0) 55%,rgba(0,0,0,.6))}
+.hero-in{position:relative;z-index:1;min-height:inherit;height:100%;display:flex;flex-direction:column;padding-top:calc(var(--pad) + env(safe-area-inset-top,0px));will-change:transform}
 .row{display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:var(--pad);padding:0 var(--pad)}
 .row>:last-child{justify-self:end;text-align:right}
-.hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;padding-top:calc(var(--pad) + env(safe-area-inset-top,0px))}
 .hero .row{align-items:start}
 .row.t>.enq{grid-column:4;justify-self:end;text-align:right;max-width:19rem}
 .mark{display:block;width:calc(100% - var(--pad)*2);margin:.7rem var(--pad) .6rem;height:auto;overflow:visible}
-.mark text{font-family:var(--disp);font-weight:800;fill:var(--ink);transition:fill .35s}
+.mark text{font-family:var(--disp);font-weight:800;fill:#fff}
 
 /* second row: text lines up with the letters I and E of the wordmark (positions are set by the script) */
 .row.m{display:block;position:relative;min-height:2.8em;--xi:.19;--xe:.58}
@@ -32,121 +41,123 @@ p{margin:0}
 .row.m .b{position:absolute;top:0;left:calc(var(--pad) + var(--xe)*(100% - 2*var(--pad)))}
 .row.m .ig{position:absolute;top:0;right:var(--pad)}
 
-.stage{position:relative;flex:1;min-height:42vh;margin-top:var(--pad);background:#000;overflow:hidden}
-.toggle{position:fixed;left:var(--pad);bottom:calc(var(--pad) + env(safe-area-inset-bottom,0px));z-index:5;display:flex;gap:.6rem;align-items:center;mix-blend-mode:difference;color:#fff}
-.toggle:hover{color:#fff}
-.sw{display:inline-flex;border:1px solid currentColor}.sw i{width:.9rem;height:.9rem;display:block}.sw i:first-child{background:#fff}.sw i:last-child{background:#000}
+.hero-info{margin-top:auto;display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:var(--pad);padding:var(--pad) var(--pad) calc(var(--pad)*1.5 + env(safe-area-inset-bottom,0px))}
+.hero-info .big{grid-column:3/5;max-width:46rem;justify-self:end;line-height:1.45;text-align:justify;text-justify:inter-word;text-indent:clamp(2rem,9vw,10rem);margin-right:clamp(.5rem,3vw,3rem)}
 
-/* every section is separated by the same distance */
-section{padding:0;margin-top:var(--gap)}
-.info{display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:var(--pad);padding:0 var(--pad)}
-.info .big{grid-column:3/5;max-width:46rem;justify-self:end;font:inherit;line-height:1.45;text-transform:uppercase;letter-spacing:inherit;text-align:justify;text-justify:inter-word;text-indent:clamp(2rem,9vw,10rem);margin-right:clamp(.5rem,3vw,3rem)}
+/* 2 · project image */
+.work{background:#000}
+.project{position:relative;margin:0;overflow:hidden;background:#000;aspect-ratio:1280/848;width:100%;height:100%;cursor:pointer;color:#f4f1ea;-webkit-tap-highlight-color:transparent}
+.project:focus-visible{outline:2px solid var(--hot);outline-offset:-4px}
+/* slideshow: photos are stacked and cross-fade */
+.slides{position:absolute;inset:0;z-index:0;isolation:isolate}
+.slides img{position:absolute;inset:0;opacity:0;transition:opacity 2.4s cubic-bezier(.45,0,.25,1)}
+.slides img.prev{opacity:1;z-index:1;transition:none}
+.slides img.on{opacity:1;z-index:2}
+.project .shade{position:absolute;inset:0;background:rgba(0,0,0,.72);opacity:0;transition:opacity .6s ease}
+/* "01" is always visible */
+.project .num{position:absolute;left:var(--pad);top:var(--pad);z-index:2}
+.project figcaption{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:var(--pad);align-content:space-between;padding:var(--pad);opacity:0;transform:translateY(.6rem);transition:opacity .45s,transform .45s;pointer-events:none}
+.project figcaption .desc{grid-column:2/5;grid-row:1;justify-self:end;max-width:calc(50vw - var(--pad));text-align:justify;text-justify:inter-word;text-indent:clamp(2rem,9vw,10rem);line-height:1.45}
+.project figcaption .title{grid-column:1/3;grid-row:2;align-self:center;justify-self:start;text-align:left;font:800 clamp(.85rem,1.2vw,1.15rem)/1.05 var(--disp);letter-spacing:0;text-transform:none}
+.project figcaption .meta{grid-column:3/5;grid-row:3;align-self:end;justify-self:end;text-align:right}
+/* click: darkens and shows the info (click again to close) */
+.project.open .shade{opacity:1}
+.project.open figcaption{opacity:1;transform:none;transition:opacity .6s ease .25s,transform .6s ease .25s}
 
-/* Asymmetrical editorial image composition, anchored to the left side. */
-.info-gallery{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto auto;column-gap:var(--pad);row-gap:calc(var(--pad)*1.5);width:min(70%,70rem);margin:clamp(2.5rem,6vw,6rem) auto 0 var(--pad);align-items:start}
-.info-gallery figure{margin:0;min-width:0}
-.info-gallery .image-one{grid-column:1/6;grid-row:1;margin-top:2.5rem}
-.info-gallery .image-two{grid-column:7/13;grid-row:1/3;margin-top:0}
-.info-gallery .image-three{grid-column:3/8;grid-row:2;margin-top:2rem}
-.info-gallery .image-frame{aspect-ratio:4/5;background:#111;overflow:hidden}
-.info-gallery .image-two .image-frame{aspect-ratio:3/4}
-.info-gallery .image-three .image-frame{aspect-ratio:5/4}
-.info-gallery img{width:100%;height:100%;object-fit:cover}
+/* 3 · contact banner */
+.banner{background:#2b2b2b;color:#fff;padding:var(--gap) 0 calc(var(--pad) + env(safe-area-inset-bottom,0px))}
+.banner a:hover{color:var(--hot)}
+.lab{padding:0 var(--pad)}
+.mail{display:block;margin:1.2rem var(--pad) 0}.mail svg{display:block;width:100%;height:auto;overflow:visible}.mail text{font-family:var(--disp);font-weight:800;fill:currentColor}
 
-.contact{padding-bottom:var(--gap)}
-.mail{display:block;margin:2rem var(--pad) 0}.mail svg{display:block;width:100%;height:auto;overflow:visible}.mail text{font-family:var(--disp);font-weight:800;fill:currentColor}
-footer{margin-top:var(--gap);padding-bottom:calc(var(--pad) + 2.5rem + env(safe-area-inset-bottom,0px))}
-
+footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-bottom,0px))}
 .foot{display:grid;grid-template-columns:1fr auto 1fr;gap:var(--pad);padding-inline:var(--pad);align-items:start}
 .foot .c{text-align:center}
 .foot .r{justify-self:end;text-align:right}
 
+
+/* ---------- scroll story (enabled by the script) ---------- */
+.fx .story{height:460vh;height:460svh}
+.fx .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
+.fx .layer{position:absolute;inset:0;will-change:opacity,transform}
+.fx .hero{min-height:0}
+.fx .banner{inset:auto 0 0 0;padding-top:1.4rem;background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
+.fx .project{aspect-ratio:auto}
+
 @media (max-width:760px){
-  .row,.info{grid-template-columns:1fr 1fr}
+  .row{grid-template-columns:1fr 1fr}
   .row>:last-child{justify-self:start;text-align:left}
   .row>*{margin-bottom:.4rem}
   .row.m{display:grid;min-height:0}
   .row.m .a,.row.m .b,.row.m .ig{position:static;width:auto}
-  .info .big{grid-column:1/3;justify-self:stretch;max-width:none;margin:1.5rem 0 0;text-indent:2.5rem;font-size:.8125rem}
-  .info-gallery{width:calc(100% - 2*var(--pad));grid-template-columns:repeat(6,minmax(0,1fr));margin-top:2.5rem;column-gap:.6rem;row-gap:1.2rem}
-  .info-gallery .image-one{grid-column:1/4;margin-top:1.5rem}
-  .info-gallery .image-two{grid-column:4/7;grid-row:1/3}
-  .info-gallery .image-three{grid-column:2/6;grid-row:2;margin-top:1rem}
   .hero .row.t>.enq{grid-column:1/3;justify-self:start;text-align:left;max-width:none}
+  .hero-info{grid-template-columns:1fr;gap:.3rem}
+  .row.m .ig{justify-self:end;text-align:right}
+  .hero-info{--xi:.19}
+  .hero-info .big{grid-column:1;justify-self:stretch;max-width:none;margin:0 0 0 calc(var(--xi)*100%);text-indent:2.25rem}
+  .project figcaption{grid-template-columns:1fr 1fr}
+  .project figcaption .meta{grid-column:1/3;justify-self:start;text-align:left}
+  .project figcaption .desc{grid-column:2;grid-row:1;max-width:100%;justify-self:end;text-indent:2.25rem}
+  .project figcaption .title{grid-column:1/3;justify-self:end;text-align:right;font-size:1.1rem}
 }
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body,.mark text{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body,.slides img,.project .shade,.project figcaption{transition:none}}
 </style>
 </head>
 <body>
-<header class="hero" id="top">
-  <div class="row t">
-    <p>studio
-    </p>
-    <p class="enq">For all enquiries please contact <a href="mailto:contact@sinea.studio">contact@sinea.studio</a></p>
-  </div>
-  <svg class="mark" viewBox="0 0 1000 215" role="img" aria-label="Sinea"><text x="0" y="205" font-size="290" textLength="1000" lengthAdjust="spacingAndGlyphs">SINEA</text></svg>
-  <div class="row m">
-    <p> </p>
-    <p class="a">Lighting, scenography and spatial design</p>
-    <p class="b">based in Berlin</p>
-    <a class="ig" href="https://www.instagram.com/studio.sinea/" target="_blank" rel="noopener">Instagram</a>
-  </div>
-  <div class="stage" id="stage">
-    <img src="images/green_lightray.jpg" alt="Green light ray">
-  </div>
-</header>
+<div class="story" id="story">
+ <div class="pin" id="pin">
 
-<main>
-  <section id="info" class="info-section">
-    <div class="info">
-      <p><b>Info</b></p>
-      <p class="big">Studio Sinea is an interdisciplinary design studio in Berlin that specializes in lighting design, scenography, and spatial installations. We focus on the creative deployment of technology to create a unique approach for atmospheric storytelling.</p>
+  <header class="hero layer" id="top">
+    <div class="bg"><img src="images/green_lightray.jpg" alt="Green light ray"></div>
+    <div class="hero-in">
+      <div class="row t">
+        <p>studio</p>
+        <p class="enq">For all enquiries please contact <a href="mailto:contact@sinea.studio">contact@sinea.studio</a></p>
+      </div>
+      <svg class="mark" viewBox="0 0 1000 215" role="img" aria-label="Sinea"><text x="0" y="205" font-size="290" textLength="1000" lengthAdjust="spacingAndGlyphs">SINEA</text></svg>
+      <div class="row m">
+        <p> </p>
+        <p class="a">Lighting, scenography and spatial design</p>
+        <p class="b">based in Berlin</p>
+        <a class="ig" href="https://www.instagram.com/studio.sinea/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="hero-info" id="info">
+        <p><b>Info</b></p>
+        <p class="big">Studio Sinea is an interdisciplinary design studio in Berlin that specializes in lighting design, scenography, and spatial installations. We focus on the creative deployment of technology to create a unique approach for atmospheric storytelling.</p>
+      </div>
     </div>
-<div class="info-gallery" aria-label="Studio imagery">
-  <figure class="image-one">
-    <div class="image-frame">
-      <img src="images/red_lights2.jpg" alt="Pink lights">
-    </div>
-  </figure>
+  </header>
 
-  <figure class="image-two">
-    <div class="image-frame">
-      <img src="images/red_input.jpg" alt="Red light installation">
-    </div>
-  </figure>
-
-  <figure class="image-three">
-    <div class="image-frame">
-      <img src="images/photo-1.jpg" alt="Red lights">
-    </div>
-  </figure>
-</div>
-
-  <section id="work">
-    <div class="info">
-      <p> </p>
-      <p> </p>
-      <p>More information on our projects will follow soon.<br>For now, just follow the process.</p></div>
+  <section class="work layer" id="work">
+    <figure class="project" id="project" tabindex="0" role="button" aria-expanded="false" aria-label="themuddshow x kwartier ADE 2026 – show or hide info">
+      <div class="slides">
+        <img class="on" src="images/ADE5.jpg" alt="themuddshow x kwartier ADE 2026">
+        <img src="images/ADE4.jpg" alt="">
+        <img src="images/ADE3.jpg" alt="">
+        <img src="images/ADE2.jpg" alt="">
+      </div>
+      <div class="shade"></div>
+      <span class="num">01</span>
+      <figcaption>
+        <p class="desc">Lighting design, scenography and light operation for themuddshow x kwartier livestream at ADE 2026.</p>
+        <span class="title">tms x kwartier</span>
+        <p class="meta">Lighting design<br>Amsterdam<br>2026</p>
+      </figcaption>
+    </figure>
   </section>
 
-  <section class="contact" id="contact">
-    <div class="info"><p><b>Contact</b></p></div>
+  <section class="banner layer" id="contact">
+    <p class="lab"><b>Contact</b></p>
     <a class="mail" href="mailto:contact@sinea.studio" aria-label="contact@sinea.studio"><svg viewBox="0 0 1000 200" aria-hidden="true"><text x="0" y="80" font-size="110" textLength="1000" lengthAdjust="spacingAndGlyphs">CONTACT@SINEA</text><text x="0" y="185" font-size="110" textLength="360" lengthAdjust="spacingAndGlyphs">.STUDIO</text></svg></a>
   </section>
-</main>
 
-<footer class="foot">
-  <p></p>
-  <p class="c">Berlin &copy;2026</p>
-  <a class="r" href="#top">Back to top</a>
-</footer>
+ </div>
+</div>
 
-<button class="toggle" id="theme" aria-label="Toggle light and dark">Toggle <span class="sw"><i></i><i></i></span></button>
 
 <script>
 (function(){
-  var root=document.documentElement,theme=document.getElementById('theme');
-  theme.addEventListener('click',function(){root.setAttribute('data-theme',root.getAttribute('data-theme')==='dark'?'light':'dark')});
+  var root=document.documentElement;
 
   function ctx(){var c=document.createElement('canvas').getContext('2d');c.font='800 290px Syne, Arial, sans-serif';return c}
 
@@ -159,6 +170,7 @@ footer{margin-top:var(--gap);padding-bottom:calc(var(--pad) + 2.5rem + env(safe-
     svg.setAttribute('viewBox','0 0 1000 '+Math.ceil(b2+4));
     t[0].setAttribute('font-size',f);t[0].setAttribute('y',b1);t[0].setAttribute('textLength',1000);
     t[1].setAttribute('font-size',f);t[1].setAttribute('y',b2);t[1].setAttribute('textLength',w('.STUDIO',f)*k);
+
   }
 
   /* align the second text row with the left edge of the I and the E in SINEA */
@@ -173,10 +185,92 @@ footer{margin-top:var(--gap);padding-bottom:calc(var(--pad) + 2.5rem + env(safe-
     var r=document.querySelector('.row.m');
     r.style.setProperty('--xi',left(1));
     r.style.setProperty('--xe',left(3));
+    document.querySelector('.hero-info').style.setProperty('--xi',left(1));
   }
 
   function run(){fit();align()}
   if(document.fonts&&document.fonts.load){document.fonts.load('800 100px Syne','SINEA.@').then(run,run)}else{run()}
+
+
+  /* ---------- project: slideshow on hover, click shows / hides the info ---------- */
+  var proj=document.getElementById('project'),slides=[].slice.call(proj.querySelectorAll('.slides img')),
+      si=0,st=0,isOpen=false,hovering=false,inView=false,
+      touch=window.matchMedia&&matchMedia('(hover:none)').matches,
+      calm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function showSlide(i){
+    i=(i+slides.length)%slides.length;if(i===si)return;
+    slides.forEach(function(im){im.classList.remove('prev')});
+    slides[si].classList.remove('on');slides[si].classList.add('prev');   /* the old photo stays fully visible underneath while the new one fades in */
+    si=i;slides[si].classList.remove('prev');slides[si].classList.add('on');
+  }
+  function step(){showSlide(si+1);st=setTimeout(step,4200)}
+  function play(){if(!st&&!isOpen&&slides.length>1)st=setTimeout(step,1000)}
+  function stop(){clearTimeout(st);st=0}
+  function toggleInfo(){
+    isOpen=!isOpen;proj.classList.toggle('open',isOpen);proj.setAttribute('aria-expanded',isOpen);
+    if(isOpen)stop();else if(hovering||(touch&&inView&&!calm))play();
+  }
+  proj.addEventListener('mouseenter',function(){hovering=true;play()});
+  proj.addEventListener('mouseleave',function(){hovering=false;stop();if(!isOpen)showSlide(0)});
+  proj.addEventListener('click',toggleInfo);
+  proj.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleInfo()}});
+  /* touch screens have no hover: the slideshow runs while the project is on screen */
+  window.projectInView=function(v){
+    if(!touch||calm||v===inView)return;
+    inView=v;
+    if(v&&!isOpen)play();else if(!v){stop();if(!isOpen)showSlide(0)}
+  };
+
+  /* ---------- scroll story: image 1 -> image 2 -> contact banner ---------- */
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  root.classList.add('fx');
+
+  var story=document.getElementById('story'),
+      hero=document.getElementById('top'),heroBg=hero.querySelector('.bg'),heroIn=hero.querySelector('.hero-in'),
+      work=document.getElementById('work'),banner=document.getElementById('contact');
+
+  function clamp(x){return x<0?0:x>1?1:x}
+  function sm(x){x=clamp(x);return x*x*(3-2*x)}
+  function seg(p,a,b){return sm((p-a)/(b-a))}
+  function vis(el,o){el.style.visibility=o<.01?'hidden':'visible';el.style.pointerEvents=o>.6?'auto':'none'}
+
+  function render(p){
+    var vh=innerHeight;
+    /* image 1: lingers, drifts and slowly pushes in, then dissolves */
+    var h=seg(p,.16,.44),push=seg(p,0,.44);
+    heroBg.style.transform='scale('+(1+.08*push)+')';
+    heroIn.style.transform='translate3d(0,'+(-h*vh*.1)+'px,0)';
+    hero.style.opacity=1-h;vis(hero,1-h);
+
+    /* image 2 floats in while image 1 is still dissolving, settling from slightly larger */
+    var w=seg(p,.22,.50);
+    work.style.opacity=w;
+    work.style.transform='scale('+(1.1-.1*w)+')';
+    vis(work,w);
+    projectInView(w>.6);
+
+    /* contact banner slides up over image 2 */
+    var b=seg(p,.70,.90);
+    banner.style.transform='translate3d(0,'+((1-b)*100)+'%,0)';
+    banner.style.visibility=b<=0?'hidden':'visible';
+  }
+
+  /* smoothing: the story follows the scroll with a little drag, so it feels like it holds you back */
+  var cur=0,tgt=0,raf=0;
+  function read(){
+    var d=story.offsetHeight-innerHeight;
+    tgt=d>0?clamp(-story.getBoundingClientRect().top/d):0;
+  }
+  function tick(){
+    cur+=(tgt-cur)*.07;
+    if(Math.abs(tgt-cur)<.0003)cur=tgt;
+    render(cur);
+    raf=cur===tgt?0:requestAnimationFrame(tick);
+  }
+  function kick(){read();if(!raf)raf=requestAnimationFrame(tick)}
+  addEventListener('scroll',kick,{passive:true});
+  addEventListener('resize',function(){read();cur=tgt;render(cur)});
+  read();cur=tgt;render(cur);
 })();
 </script>
 </body>
