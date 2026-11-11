@@ -78,23 +78,21 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 
 /* ---------- scroll story (enabled by the script) ---------- */
 .fx .story{height:460vh;height:460svh}
-.fx,.fx body{background:#000}
-/* dvh follows the iPhone address bar, so no white strip appears below the pinned screen */
-.fx .pin{position:sticky;top:0;height:100vh;height:100svh;height:100dvh;overflow:hidden;background:#000}
+.fx .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
 .fx .layer{position:absolute;inset:0;will-change:opacity,transform}
 .fx .hero{min-height:0}
 .fx .banner{inset:auto 0 0 0;padding-top:1.4rem;background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
 .fx .project{aspect-ratio:auto}
 
 @media (max-width:760px){
-  /* phone: choose which part of each photo stays in view with --fx (0% = left, 50% = middle, 100% = right) */
-  .slides img,.hero .bg img{object-position:var(--fx,50%) 50%}
   .row{grid-template-columns:1fr 1fr}
   .row>:last-child{justify-self:start;text-align:left}
   .row>*{margin-bottom:.4rem}
   .row.m{display:grid;min-height:0}
   .row.m .a,.row.m .b,.row.m .ig{position:static;width:auto}
-  .hero .row.t>.enq{grid-column:1/3;justify-self:start;text-align:left;max-width:none}
+  .hero .row.t>.enq{display:none}
+  .hero .row.t>*{margin-bottom:0}
+  .mark{margin-top:.2rem}
   .hero-info{grid-template-columns:1fr;gap:.3rem}
   .row.m .ig{justify-self:end;text-align:right}
   .hero-info{--xi:.19}
@@ -135,23 +133,22 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   <section class="work layer" id="work">
     <figure class="project" id="project" tabindex="0" role="button" aria-expanded="false" aria-label="themuddshow x kwartier ADE 2026 – show or hide info">
       <div class="slides">
-        <picture><source media="(max-width:760px)" srcset="images/ADE1-mobile.jpg"><img class="on" src="images/ADE1.jpg" alt="themuddshow x kwartier ADE 2026"></picture>
-        <picture><source media="(max-width:760px)" srcset="images/ADE2-mobile.jpg"><img src="images/ADE2.jpg" alt=""></picture>
-        <picture><source media="(max-width:760px)" srcset="images/ADE3-mobile.jpg"><img src="images/ADE3.jpg" alt=""></picture>
-        <picture><source media="(max-width:760px)" srcset="images/ADE4-mobile.jpg"><img src="images/ADE4.jpg" alt=""></picture>
-        <picture><source media="(max-width:760px)" srcset="images/ADE5-mobile.jpg"><img src="images/ADE5.jpg" alt=""></picture>
+        <img class="on" src="images/ADE5.jpg" alt="themuddshow x kwartier ADE 2026">
+        <img src="images/ADE4.jpg" alt="">
+        <img src="images/ADE3.jpg" alt="">
+        <img src="images/ADE2.jpg" alt="">
       </div>
       <div class="shade"></div>
       <span class="num">01</span>
       <figcaption>
-        <p class="desc">Scenography and light operation for themuddshow x kwartier at ADE 2026.</p>
+        <p class="desc">Lighting design, scenography and light operation for themuddshow x kwartier livestream at ADE 2026.</p>
         <span class="title">tms x kwartier</span>
         <p class="meta">Lighting design<br>Amsterdam<br>2026</p>
       </figcaption>
     </figure>
   </section>
 
-<section class="banner layer" id="contact">
+  <section class="banner layer" id="contact">
     <p class="lab"><b>Contact</b></p>
     <a class="mail" href="mailto:contact@sinea.studio" aria-label="contact@sinea.studio"><svg viewBox="0 0 1000 200" aria-hidden="true"><text x="0" y="80" font-size="110" textLength="1000" lengthAdjust="spacingAndGlyphs">CONTACT@SINEA</text><text x="0" y="185" font-size="110" textLength="360" lengthAdjust="spacingAndGlyphs">.STUDIO</text></svg></a>
   </section>
@@ -197,7 +194,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   if(document.fonts&&document.fonts.load){document.fonts.load('800 100px Syne','SINEA.@').then(run,run)}else{run()}
 
 
-  /* ---------- project: slideshow on hover, click shows / hides the info ---------- */
+  /* ---------- project: slideshow plays automatically, click shows / hides the info ---------- */
   var proj=document.getElementById('project'),slides=[].slice.call(proj.querySelectorAll('.slides img')),
       si=0,st=0,isOpen=false,hovering=false,inView=false,
       touch=window.matchMedia&&matchMedia('(hover:none)').matches,
@@ -213,15 +210,13 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   function stop(){clearTimeout(st);st=0}
   function toggleInfo(){
     isOpen=!isOpen;proj.classList.toggle('open',isOpen);proj.setAttribute('aria-expanded',isOpen);
-    if(isOpen)stop();else if(hovering||(touch&&inView&&!calm))play();
+    if(isOpen)stop();else if(inView&&!calm)play();
   }
-  proj.addEventListener('mouseenter',function(){hovering=true;play()});
-  proj.addEventListener('mouseleave',function(){hovering=false;stop();if(!isOpen)showSlide(0)});
   proj.addEventListener('click',toggleInfo);
   proj.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleInfo()}});
-  /* touch screens have no hover: the slideshow runs while the project is on screen */
+  /* the slideshow runs automatically while the project is on screen */
   window.projectInView=function(v){
-    if(!touch||calm||v===inView)return;
+    if(calm||v===inView)return;
     inView=v;
     if(v&&!isOpen)play();else if(!v){stop();if(!isOpen)showSlide(0)}
   };
