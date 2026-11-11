@@ -80,7 +80,8 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 
 /* ---------- scroll story (enabled by the script) ---------- */
 .fx .story{height:460vh;height:460svh}
-.fx .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
+/* the screen is fixed to the real edges of the display (not a calculated height), so it always fills the iPhone screen completely, whether Safari's toolbar is shown or hidden */
+.fx .pin{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#000}
 .fx .layer{position:absolute;inset:0;will-change:opacity,transform}
 .fx .hero{min-height:0}
 .fx .banner{--off:calc(clamp(2rem,6vw,4.5rem) + env(safe-area-inset-bottom,0px));inset:auto 0 var(--off) 0;padding-top:1.4rem;padding-bottom:var(--pad);background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
@@ -136,17 +137,17 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   <section class="work layer" id="work">
     <figure class="project" id="project" tabindex="0" role="button" aria-expanded="false" aria-label="themuddshow x kwartier ADE 2026 – show or hide info">
       <div class="slides">
-        <img class="on" src="images/ADE1.jpg" alt="themuddshow x kwartier ADE 2026">
-        <img src="images/ADE3.jpg" alt="">
-        <img src="images/ADE4.jpg" alt="">
-        <img src="images/ADE2.jpg" alt="">
+        <picture><source media="(max-width:760px)" srcset="images/ADE1-mobile.jpg"><img class="on" src="images/ADE1.jpg" alt="themuddshow x kwartier ADE 2026"></picture>
+        <picture><source media="(max-width:760px)" srcset="images/ADE3-mobile.jpg"><img src="images/ADE3.jpg" alt=""></picture>
+        <picture><source media="(max-width:760px)" srcset="images/ADE4-mobile.jpg"><img src="images/ADE4.jpg" alt=""></picture>
+        <picture><source media="(max-width:760px)" srcset="images/ADE2-mobile.jpg"><img src="images/ADE2.jpg" alt=""></picture>
       </div>
       <div class="shade"></div>
       <span class="num">01</span>
       <figcaption>
-        <p class="desc">Lighting design, scenography and light operation for the muddshow x kwartier livestream at Amsterdam Dance Event 2026.</p>
+        <p class="desc">Lighting design, scenography and light operation for themuddshow x kwartier livestream at ADE 2026.</p>
         <span class="title">tms x kwartier</span>
-        <p class="meta">Light Installation<br>Amsterdam<br>2026</p>
+        <p class="meta">Lighting design<br>Amsterdam<br>2026</p>
       </figcaption>
     </figure>
   </section>
