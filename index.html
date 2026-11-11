@@ -52,9 +52,9 @@ h2{font:inherit}
 .slides{position:absolute;inset:0;z-index:0;isolation:isolate}
 /* double exposure: the new photo is "screened" onto the old one (light adds up, dark adds nothing),
    while the old photo loses its shadows first, so only its bright spots linger and glow through */
-.slides img{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 2.8s cubic-bezier(.4,0,.2,1),filter 3.2s ease}
+.slides img{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 7s cubic-bezier(.4,0,.3,1),filter 7.5s cubic-bezier(.45,0,.55,1)}
 .slides img.on{opacity:1;z-index:2}
-.slides img.out{opacity:0;z-index:1;filter:brightness(.85) contrast(1.7) saturate(1.15);transition:opacity 4s cubic-bezier(.3,0.2,.5,.55),filter 3s ease}
+.slides img.out{opacity:0;z-index:1;filter:brightness(.85) contrast(1.7) saturate(1.15);transition:opacity 10s cubic-bezier(.5,0,.6,.7),filter 7.5s cubic-bezier(.45,0,.55,1)}
 .project .shade{position:absolute;inset:0;background:rgba(0,0,0,.72);opacity:0;transition:opacity .6s ease}
 /* "01" is always visible */
 .project .num{position:absolute;left:var(--pad);top:var(--pad);z-index:2}
@@ -145,9 +145,9 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
       <div class="shade"></div>
       <span class="num">01</span>
       <figcaption>
-        <p class="desc">Lighting design, scenography and light operation for themuddshow x kwartier livestream at ADE 2026.</p>
+        <p class="desc">Lighting design, scenography and light operation for the muddshow x kwartier livestream at Amsterdam Dance Event 2026.</p>
         <span class="title">tms x kwartier</span>
-        <p class="meta">Lighting design<br>Amsterdam<br>2026</p>
+        <p class="meta">Light Installation<br>Amsterdam<br>2026</p>
       </figcaption>
     </figure>
   </section>
@@ -209,7 +209,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
     slides[si].classList.remove('on');slides[si].classList.add('out');   /* the old photo burns down to its highlights while the new one is exposed over it */
     si=i;slides[si].classList.add('on');
   }
-  function step(){showSlide(si+1);st=setTimeout(step,4200)}
+  function step(){showSlide(si+1);st=setTimeout(step,11500)}
   function play(){if(!st&&!isOpen&&slides.length>1)st=setTimeout(step,1000)}
   function stop(){clearTimeout(st);st=0}
   function toggleInfo(){
