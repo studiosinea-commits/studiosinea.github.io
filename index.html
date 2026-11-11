@@ -50,9 +50,11 @@ h2{font:inherit}
 .project:focus-visible{outline:2px solid var(--hot);outline-offset:-4px}
 /* slideshow: photos are stacked and cross-fade */
 .slides{position:absolute;inset:0;z-index:0;isolation:isolate}
-.slides img{position:absolute;inset:0;opacity:0;transition:opacity 2.4s cubic-bezier(.45,0,.25,1)}
-.slides img.prev{opacity:1;z-index:1;transition:none}
+/* double exposure: the new photo is "screened" onto the old one (light adds up, dark adds nothing),
+   while the old photo loses its shadows first, so only its bright spots linger and glow through */
+.slides img{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;transition:opacity 2.8s cubic-bezier(.4,0,.2,1),filter 3.2s ease}
 .slides img.on{opacity:1;z-index:2}
+.slides img.out{opacity:0;z-index:1;filter:brightness(.85) contrast(1.7) saturate(1.15);transition:opacity 4s cubic-bezier(.3,0.2,.5,.55),filter 3s ease}
 .project .shade{position:absolute;inset:0;background:rgba(0,0,0,.72);opacity:0;transition:opacity .6s ease}
 /* "01" is always visible */
 .project .num{position:absolute;left:var(--pad);top:var(--pad);z-index:2}
@@ -81,7 +83,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 .fx .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
 .fx .layer{position:absolute;inset:0;will-change:opacity,transform}
 .fx .hero{min-height:0}
-.fx .banner{inset:auto 0 0 0;padding-top:1.4rem;background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
+.fx .banner{--off:calc(clamp(2rem,6vw,4.5rem) + env(safe-area-inset-bottom,0px));inset:auto 0 var(--off) 0;padding-top:1.4rem;padding-bottom:var(--pad);background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
 .fx .project{aspect-ratio:auto}
 
 @media (max-width:760px){
@@ -93,6 +95,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   .hero .row.t>.enq{display:none}
   .hero .row.t>*{margin-bottom:0}
   .mark{margin-top:.2rem}
+  .fx .banner{--off:calc(4.5rem + env(safe-area-inset-bottom,0px))}
   .hero-info{grid-template-columns:1fr;gap:.3rem}
   .row.m .ig{justify-self:end;text-align:right}
   .hero-info{--xi:.19}
@@ -133,17 +136,17 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   <section class="work layer" id="work">
     <figure class="project" id="project" tabindex="0" role="button" aria-expanded="false" aria-label="themuddshow x kwartier ADE 2026 – show or hide info">
       <div class="slides">
-        <img class="on" src="images/ADE5.jpg" alt="themuddshow x kwartier ADE 2026">
-        <img src="images/ADE4.jpg" alt="">
+        <img class="on" src="images/ADE1.jpg" alt="themuddshow x kwartier ADE 2026">
         <img src="images/ADE3.jpg" alt="">
+        <img src="images/ADE4.jpg" alt="">
         <img src="images/ADE2.jpg" alt="">
       </div>
       <div class="shade"></div>
       <span class="num">01</span>
       <figcaption>
-        <p class="desc">Lighting design, scenography and light operation for themuddshow x kwartier livestream at ADE 2026.</p>
+        <p class="desc">Lighting design, scenography and light operation for the muddshow x kwartier livestream at Amsterdam Dance Event 2026.</p>
         <span class="title">tms x kwartier</span>
-        <p class="meta">Lighting design<br>Amsterdam<br>2026</p>
+        <p class="meta">Light Installation<br>Amsterdam<br>2026</p>
       </figcaption>
     </figure>
   </section>
@@ -201,9 +204,9 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
       calm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
   function showSlide(i){
     i=(i+slides.length)%slides.length;if(i===si)return;
-    slides.forEach(function(im){im.classList.remove('prev')});
-    slides[si].classList.remove('on');slides[si].classList.add('prev');   /* the old photo stays fully visible underneath while the new one fades in */
-    si=i;slides[si].classList.remove('prev');slides[si].classList.add('on');
+    slides.forEach(function(im){im.classList.remove('out')});
+    slides[si].classList.remove('on');slides[si].classList.add('out');   /* the old photo burns down to its highlights while the new one is exposed over it */
+    si=i;slides[si].classList.add('on');
   }
   function step(){showSlide(si+1);st=setTimeout(step,4200)}
   function play(){if(!st&&!isOpen&&slides.length>1)st=setTimeout(step,1000)}
@@ -251,7 +254,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 
     /* contact banner slides up over image 2 */
     var b=seg(p,.70,.90);
-    banner.style.transform='translate3d(0,'+((1-b)*100)+'%,0)';
+    banner.style.transform='translate3d(0,calc('+((1-b)*100)+'% + '+(1-b)+' * var(--off)),0)';
     banner.style.visibility=b<=0?'hidden':'visible';
   }
 
