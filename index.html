@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Studio Sinea – Lighting Design, Berlin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -81,10 +84,15 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 /* ---------- scroll story (enabled by the script) ---------- */
 .fx .story{height:460vh;height:460svh}
 /* the screen is fixed to the real edges of the display (not a calculated height), so it always fills the iPhone screen completely, whether Safari's toolbar is shown or hidden */
-.fx .pin{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#000}
+html.fx,html.fx body{background:#000}
+/* the photos fill the LARGE viewport (the screen with Safari's toolbars hidden), so there is never a white gap.
+   Text layers below are sized to the SMALL viewport, so their position is unchanged when the toolbars are visible. */
+.fx .pin{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;overflow:hidden;background:#000}
+.fx .hero-in{height:100vh;height:100svh;min-height:0}
+.fx .project figcaption{inset:0 0 auto 0;height:100vh;height:100svh}
 .fx .layer{position:absolute;inset:0;will-change:opacity,transform}
 .fx .hero{min-height:0}
-.fx .banner{--off:calc(clamp(2rem,6vw,4.5rem) + env(safe-area-inset-bottom,0px));inset:auto 0 var(--off) 0;padding-top:1.4rem;padding-bottom:var(--pad);background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
+.fx .banner{--off:calc(clamp(2rem,6vw,4.5rem) + env(safe-area-inset-bottom,0px));--gapb:calc(100vh - 100vh);--gapb:calc(100lvh - 100svh);inset:auto 0 calc(var(--off) + var(--gapb)) 0;padding-top:1.4rem;padding-bottom:var(--pad);background:rgba(70,70,70,.5);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
 .fx .project{aspect-ratio:auto}
 
 @media (max-width:760px){
@@ -97,6 +105,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
   .hero .row.t>*{margin-bottom:0}
   .mark{margin-top:.2rem}
   .fx .banner{--off:calc(4.5rem + env(safe-area-inset-bottom,0px))}
+  .slides img,.hero .bg img{object-position:50% 50%}
   .hero-info{grid-template-columns:1fr;gap:.3rem}
   .row.m .ig{justify-self:end;text-align:right}
   .hero-info{--xi:.19}
@@ -255,7 +264,7 @@ footer{padding:var(--pad) 0 calc(var(--pad) + 2.5rem + env(safe-area-inset-botto
 
     /* contact banner slides up over image 2 */
     var b=seg(p,.70,.90);
-    banner.style.transform='translate3d(0,calc('+((1-b)*100)+'% + '+(1-b)+' * var(--off)),0)';
+    banner.style.transform='translate3d(0,calc('+((1-b)*100)+'% + '+(1-b)+' * (var(--off) + var(--gapb))),0)';
     banner.style.visibility=b<=0?'hidden':'visible';
   }
 
