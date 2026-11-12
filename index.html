@@ -115,6 +115,7 @@ html.fx,html.fx body{background:#000}
   .project figcaption .desc{grid-column:2;grid-row:1;max-width:100%;justify-self:end;text-indent:2.25rem}
   .project figcaption .title{grid-column:1/3;justify-self:end;text-align:right;font-size:1.1rem}
 }
+@media (min-width:761px){.banner{display:none!important}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body,.slides img,.project .shade,.project figcaption{transition:none}}
 </style>
 </head>
@@ -148,6 +149,7 @@ html.fx,html.fx body{background:#000}
       <div class="slides">
         <picture><source media="(max-width:760px)" srcset="images/ADE1-mobile.jpg"><img class="on" src="images/ADE1.jpg" alt="themuddshow x kwartier ADE 2026"></picture>
         <picture><source media="(max-width:760px)" srcset="images/ADE3-mobile.jpg"><img src="images/ADE3.jpg" alt=""></picture>
+        <picture><source media="(max-width:760px)" srcset="images/ADE5-mobile.jpg"><img src="images/ADE5.jpg" alt=""></picture>
         <picture><source media="(max-width:760px)" srcset="images/ADE4-mobile.jpg"><img src="images/ADE4.jpg" alt=""></picture>
         <picture><source media="(max-width:760px)" srcset="images/ADE2-mobile.jpg"><img src="images/ADE2.jpg" alt=""></picture>
       </div>
@@ -180,8 +182,18 @@ html.fx,html.fx body{background:#000}
   function fit(){
     var c=ctx();
     function w(t,s){c.font='800 '+s+'px Syne, Arial, sans-serif';return c.measureText(t).width}
-    var k=1000/w('SINEA',290),f=100000/(w('CONTACT@SINEA',100)*k),cap=f*.7,b1=cap+2,b2=b1+cap+cap*.18;
+    var k=1000/w('SINEA',290);
     var svg=document.querySelector('.mail svg'),t=svg.querySelectorAll('text');
+    if(window.matchMedia&&matchMedia('(max-width:760px)').matches){
+      /* mobile: the whole address on ONE line, always */
+      var full='CONTACT@SINEA.STUDIO',f1=100000/(w(full,100)*k),c1=f1*.7;
+      svg.setAttribute('viewBox','0 0 1000 '+Math.ceil(c1+4));
+      t[0].textContent=full;t[0].setAttribute('font-size',f1);t[0].setAttribute('y',c1+2);t[0].setAttribute('textLength',1000);
+      t[1].style.display='none';
+      return;
+    }
+    t[0].textContent='CONTACT@SINEA';t[1].style.display='';
+    var f=100000/(w('CONTACT@SINEA',100)*k),cap=f*.7,b1=cap+2,b2=b1+cap+cap*.18;
     svg.setAttribute('viewBox','0 0 1000 '+Math.ceil(b2+4));
     t[0].setAttribute('font-size',f);t[0].setAttribute('y',b1);t[0].setAttribute('textLength',1000);
     t[1].setAttribute('font-size',f);t[1].setAttribute('y',b2);t[1].setAttribute('textLength',w('.STUDIO',f)*k);
@@ -204,6 +216,7 @@ html.fx,html.fx body{background:#000}
   }
 
   function run(){fit();align()}
+  addEventListener('resize',function(){if(document.querySelector('.mail svg'))fit()});
   if(document.fonts&&document.fonts.load){document.fonts.load('800 100px Syne','SINEA.@').then(run,run)}else{run()}
 
 
